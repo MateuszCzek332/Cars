@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style></style>
+</head>
+<body>
+<h1>Car menager</h1>
+
+    Model: <input type="text" id="model"><br>
+    Rok: <select id="rok">
+            <option>2002</option>
+            <option>2004</option>
+            <option>2005</option>
+            <option>2006</option>
+            <option>2007</option>
+        </select><br>
+    Poduszki: <input type="checkbox" id="kierowca"><input type="checkbox" id="pasazer"><input type="checkbox" id="klapa"><input type="checkbox" id="boczne"><br>
+    Kolor: <input type="color" id="kolor"><br>
+    <input id="button" type="button" value="submit"  ><br>
+
+    <script>
+        fetchPostAsync = async () => {
+
+            const data = JSON.stringify({
+                model: document.getElementById("model").value,
+                rok: document.getElementById("rok").value,
+                kolor: document.getElementById("kolor").value,
+            })
+
+            const options = {
+                method: "POST",
+                body: data,
+            };
+
+            let response = await fetch("/add", options)
+
+            if (!response.ok)
+                return response.status
+            else
+                return await response.json() // response.json
+
+        }
+
+        document.getElementById("button").onclick = async function () {
+            await fetchPostAsync()
+        }
+
+    </script>
+
+</body>
+</html>
