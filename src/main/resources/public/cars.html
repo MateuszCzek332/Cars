@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Car Menager MC</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<h1>Car menager</h1>
+<h2>Lista aut</h2>
+<table id="table">
+</table>
+
+<a href="index.html">Dodaj nowe auto</a>
+
+<script>
+
+    init = `<tr>
+                    <td>ID</td>
+                    <td>UUID</td>
+                    <td>Model</td>
+                    <td>Rok</td>
+                    <td>Kolor</td>
+                    <td>Poduszki</td>
+                    <td>Usuń</td>
+                    <td>Zmień</td>
+                </tr>`
+
+    let table = document.getElementById("table")
+
+    window.onload = async () => {
+        table.innerHTML = init;
+        let w = await jsonFetchPostAsync();
+        console.log(w);
+        for (let i =0; i<w.length; i++){
+            let tr = document.createElement("tr")
+                let id = document.createElement("td")
+                let uuid = document.createElement("td")
+                let model = document.createElement("td")
+                let rok = document.createElement("td")
+                let poduszki = document.createElement("td")
+                let kolor = document.createElement("td")
+                let del = document.createElement("td")
+                let update = document.createElement("td")
+
+                id.innerText = w[i].id
+                uuid.innerText = w[i].uuid
+                model.innerText = w[i].model
+                rok.innerText = w[i].year
+                kolor.style.backgroundColor = w[i].color
+                for (let j=0; j<w[i].airbags.length; j++){
+                    poduszki.innerHTML += w[i].airbags[j].description + ": " + w[i].airbags[j].value + '<br>';
+                }
+
+                tr.appendChild(id)
+                tr.appendChild(uuid)
+                tr.appendChild(model)
+                tr.appendChild(rok)
+                tr.appendChild(kolor)
+                tr.appendChild(poduszki)
+                tr.appendChild(del)
+                tr.appendChild(update)
+            table.appendChild(tr)
+        }
+
+    }
+
+    let jsonFetchPostAsync = async () => {
+
+        const data = JSON.stringify({
+            //wysyłamy tylko zatytanie w celu otrzymania listy wszystkich aut
+        })
+
+        const options = {
+            method: "POST",
+            body: data,
+        };
+
+        let response = await fetch("/json", options)
+
+        if (!response.ok)
+            return response.status
+        else
+            return await response.json()
+    }
+
+</script>
+</body>
+</html>

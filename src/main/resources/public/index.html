@@ -2,52 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <style></style>
+    <title>Car Menager MC</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <h1>Car menager</h1>
+<h2>Dodawanie auta</h2>
 
     Model: <input type="text" id="model"><br>
-    Rok: <select id="rok">
+    Rok: <select id="year">
             <option>2002</option>
             <option>2004</option>
             <option>2005</option>
             <option>2006</option>
             <option>2007</option>
         </select><br>
-    Poduszki: <input type="checkbox" id="kierowca"><input type="checkbox" id="pasazer"><input type="checkbox" id="klapa"><input type="checkbox" id="boczne"><br>
-    Kolor: <input type="color" id="kolor"><br>
-    <input id="button" type="button" value="submit"  ><br>
+    Poduszki: <br>
+        - kierowca <input type="checkbox" id="kierowca" name="kierowca"><br>
+        - pasażer <input type="checkbox" id="pasazer" name="pasazer"><br>
+        - kanapa <input type="checkbox" id="kanapa"><br>
+        - boczne <input type="checkbox" id="boczne"><br>
+    Kolor: <input type="color" id="color"><br>
+    <input id="btn" type="button" value="submit"  ><br>
 
-    <script>
-        fetchPostAsync = async () => {
+<a href="cars.html"> Dane wszystkich samocjodów</a>
 
-            const data = JSON.stringify({
-                model: document.getElementById("model").value,
-                rok: document.getElementById("rok").value,
-                kolor: document.getElementById("kolor").value,
-            })
+<script>
 
-            const options = {
-                method: "POST",
-                body: data,
-            };
+    document.getElementById("btn").onclick = async () => {
+        let w = await addFetchPostAsync();
+        alert( JSON.stringify(w, null, 5) );
+    }
 
-            let response = await fetch("/add", options)
+    let addFetchPostAsync = async () => {
 
-            if (!response.ok)
-                return response.status
-            else
-                return await response.json() // response.json
+        const data = JSON.stringify({
+            model: document.getElementById("model").value,
+            year: document.getElementById("year").value,
+            color: document.getElementById("color").value,
+            airbags: [
+                {description: "kierowca",value: document.getElementById("kierowca").checked},
+                {description: "pasazer",value: document.getElementById("pasazer").checked},
+                {description: "kanapa",value: document.getElementById("kanapa").checked},
+                {description: "boczne",value: document.getElementById("boczne").checked},
+            ]
+        })
 
-        }
+        const options = {
+            method: "POST",
+            body: data,
+        };
 
-        document.getElementById("button").onclick = async function () {
-            await fetchPostAsync()
-        }
+        let response = await fetch("/add", options)
 
-    </script>
+        if (!response.ok)
+            return response.status
+        else
+            return await response.json()
+    }
 
+</script>
 </body>
 </html>
