@@ -16,7 +16,7 @@ public class Car {
         this.airbags = airbags;
         this.year = year;
         this.color = color;
-        this.invoice = true;
+        this.invoice = false;
     }
 
     @Override
@@ -31,6 +31,10 @@ public class Car {
                 ", invoice=" + invoice +
                 '}';
     }
+
+    public ArrayList<Airbag> getAirbags() { return airbags; }
+
+    public void setInvoice(boolean invoice) { this.invoice = invoice; }
 
     public void setId(int id) {
         this.id = id;
