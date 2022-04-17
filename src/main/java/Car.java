@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -9,13 +8,15 @@ public class Car {
     private ArrayList<Airbag> airbags;
     private int year;
     private String color;
+    private boolean invoice;
 
-    public Car(UUID uuid, String model, ArrayList<Airbag> airbags, int year, String color) {
+    public Car(UUID uuid, String model, ArrayList<Airbag> airbags, Integer year, String color) {
         this.uuid = uuid;
         this.model = model;
         this.airbags = airbags;
         this.year = year;
         this.color = color;
+        this.invoice = true;
     }
 
     @Override
@@ -27,6 +28,7 @@ public class Car {
                 ", airbags=" + airbags +
                 ", year=" + year +
                 ", color='" + color + '\'' +
+                ", invoice=" + invoice +
                 '}';
     }
 
