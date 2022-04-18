@@ -6,6 +6,10 @@ import spark.Request;
 import spark.Response;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Date;
 
 import com.itextpdf.text.pdf.PdfPCell;
@@ -16,14 +20,13 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
-
-import static spark.Spark.post;
+;
+import static spark.Spark.*;
 import static spark.Spark.staticFiles;
 
 class App {
 
     static ArrayList<Car> cars = new ArrayList<>();
-
     public static void main(String[] args) {
         staticFiles.location("/public");
         //index
@@ -35,7 +38,7 @@ class App {
         //admin
         post("/generate", (req, res) -> generateFunction(req, res)); // generowanie bazy aut
         post("/invoice", (req, res) -> invoiceFunction(req, res)); // generowanie faktury
-//        get("/invoices", (req, res) -> ...); // pobranie faktury
+        get("/invoices", (req, res) -> downloadFunction(req, res)); // pobranie faktury
     }
 
     static String addFunction(Request req, Response res) {
@@ -117,8 +120,6 @@ class App {
     static String invoiceFunction(Request req, Response res) {
         for (Car el : cars) {
             if (Objects.equals(req.body().substring(1, 37), el.getUuid().toString())) {
-                System.out.println(el);
-
                 try {
                     Document document = new Document();
                     PdfWriter.getInstance(document, new FileOutputStream("src/main/resources/public/katalog/" + el.getUuid() + ".pdf"));
@@ -142,7 +143,6 @@ class App {
 
                     Image img = Image.getInstance("src/main/resources/public/img/" + imgs[random.nextInt(imgs.length)] );
                     document.add(img);
-
                     document.close();
                     el.setInvoice(true);
                 } catch (Exception e) {
@@ -150,6 +150,22 @@ class App {
                 }
                 break;
             }
+        }
+        return req.body();
+    }
+
+    static String downloadFunction(Request req, Response res) {
+
+        String uuid =  req.queryParams("uuid");
+
+        res.type("application/octet-stream"); //
+        res.header("Content-Disposition", "attachment; filename=Faktura-" +uuid+".pdf"); // nagłówek
+
+        try {
+            OutputStream outputStream = res.raw().getOutputStream();
+            outputStream.write(Files.readAllBytes(Path.of("src/main/resources/public/katalog/" + uuid+ ".pdf"))); // response pliku do przeglądarki
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return req.body();

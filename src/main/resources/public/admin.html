@@ -109,11 +109,18 @@
             fakButton.innerText = "Generuj fakturę VAT"
             fakButton.onclick = () =>{
                 invoiceFetchPostAsync(w[i].uuid)
-                downfak.innerText = "pobierz"
+                let a = document.createElement("a")
+                a.innerText = "pobierz"
+                a.href = "/invoices?uuid=" + w[i].uuid
+                downfak.appendChild(a)
             }
             faktura.appendChild(fakButton)
-            if(w[i].invoice)
-                downfak.innerText = "pobierz"
+            if(w[i].invoice) {
+                let a = document.createElement("a")
+                a.innerText = "pobierz"
+                a.href = "/invoices?uuid=" + w[i].uuid
+                downfak.appendChild(a)
+            }
 
             tr.appendChild(id)
             tr.appendChild(uuid)
