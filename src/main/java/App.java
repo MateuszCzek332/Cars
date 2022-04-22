@@ -10,17 +10,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Date;
-
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
-;
+
 import static spark.Spark.*;
 import static spark.Spark.staticFiles;
 
@@ -30,15 +26,17 @@ class App {
     public static void main(String[] args) {
         staticFiles.location("/public");
         //index
-        post("/add", (req, res) -> addFunction(req, res));
+        post("/add", App::addFunction);
         //cars
-        post("/json", (req, res) -> daneFunction(req, res));
-        post("/delete", (req, res) -> delFunction(req, res));
-        post("/update", (req, res) -> updateFunction(req, res));
+        post("/json", App::daneFunction);
+        post("/delete", App::delFunction);
+        post("/update", App::updateFunction);
         //admin
-        post("/generate", (req, res) -> generateFunction(req, res)); // generowanie bazy aut
-        post("/invoice", (req, res) -> invoiceFunction(req, res)); // generowanie faktury
-        get("/invoices", (req, res) -> downloadFunction(req, res)); // pobranie faktury
+        post("/generate", App::generateFunction); // generowanie bazy aut
+        post("/invoice", App::invoiceFunction); // generowanie faktury
+        get("/invoices", App::downloadFunction); // pobranie faktury
+        //Search
+        post("/invoiceAll", App::invoiceAllCarsFunction); // generowanie faktury
     }
 
     static String addFunction(Request req, Response res) {
@@ -89,20 +87,9 @@ class App {
 
     static String generateFunction(Request req, Response res) {
         Gson gson = new Gson();
-        Random random = new Random();
-        String[] models = {"Opel", "Ford", "Honda"};
+        Helpers h = new Helpers();
 
-        String newmodel = models[random.nextInt(models.length)];
-        int newyear = 1950 + random.nextInt(73);
-        String randomColor = " rgb(" + random.nextInt(256) + ", " + random.nextInt(256) + ", " + random.nextInt(256) + ")";
-        ArrayList<Airbag> newairbags = new ArrayList<>();
-        newairbags.add(new Airbag("kierowca", random.nextBoolean()));
-        newairbags.add(new Airbag("pasazer", random.nextBoolean()));
-        newairbags.add(new Airbag("kanapa", random.nextBoolean()));
-        newairbags.add(new Airbag("boczne", random.nextBoolean()));
-
-
-        Car newcar = new Car(null, newmodel, newairbags, newyear, randomColor);
+        Car newcar = h.getRandomCar();
         newcar.setUuid(Generators.randomBasedGenerator().generate());
         if (cars.isEmpty())
             newcar.setId(1);
@@ -124,13 +111,11 @@ class App {
                     Document document = new Document();
                     PdfWriter.getInstance(document, new FileOutputStream("src/main/resources/public/katalog/" + el.getUuid() + ".pdf"));
                     document.open();
-                    Random random = new Random();
-                    String[] imgs = {"img1.jpg", "img2.jpg", "img3.jpg"};
                     Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
 
                     Paragraph docUUID = new Paragraph("Faktura dla " + el.getUuid().toString(), font);
                     Paragraph docModel = new Paragraph("Model: " + el.getModel(), font);
-                    Paragraph docKolor = new Paragraph("Rok: " + String.valueOf(el.getYear()), font);
+                    Paragraph docKolor = new Paragraph("Rok: " + el.getYear(), font);
 
                     document.add(docUUID);
                     document.add(docModel);
@@ -141,7 +126,7 @@ class App {
                         document.add(docAirbag);
                     }
 
-                    Image img = Image.getInstance("src/main/resources/public/img/" + imgs[random.nextInt(imgs.length)] );
+                    Image img = Image.getInstance("src/main/resources/public/img/" + el.getImg() );
                     document.add(img);
                     document.close();
                     el.setInvoice(true);
@@ -154,10 +139,29 @@ class App {
         return req.body();
     }
 
+    static String invoiceAllCarsFunction(Request req, Response res) {
+        Gson gson = new Gson();
+        Invoice i = new Invoice("sprzedawca aut", "nabywca", cars );
+        System.out.println(i);
+        Invoices inv =  new Invoices(i);
+        String odp =  inv.allCars();
+
+        return gson.toJson(odp);
+    }
+
+    static String invoiceByYearFunction(Request req, Response res) {
+        Gson gson = new Gson();
+        Invoice i = new Invoice("sprzedawca aut", "nabywca", cars );
+        System.out.println(i);
+        Invoices inv =  new Invoices(i);
+        String odp =  inv.allCars();
+
+        return gson.toJson(odp);
+    }
+
     static String downloadFunction(Request req, Response res) {
 
         String uuid =  req.queryParams("uuid");
-
         res.type("application/octet-stream"); //
         res.header("Content-Disposition", "attachment; filename=Faktura-" +uuid+".pdf"); // nagłówek
 
