@@ -32,11 +32,6 @@
 
 <script>
 
-    document.getElementById("btn").onclick = async () => {
-        let w = await addFetchPostAsync();
-        alert( JSON.stringify(w, null, 5) );
-    }
-
     let addFetchPostAsync = async () => {
 
         const data = JSON.stringify({
@@ -62,6 +57,11 @@
             return response.status
         else
             return await response.json()
+    }
+
+    document.getElementById("btn").onclick = async () => {
+        let w = await addFetchPostAsync();
+        alert( JSON.stringify(w, null, 5) );
     }
 
 </script>

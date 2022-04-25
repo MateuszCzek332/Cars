@@ -27,12 +27,10 @@ public class Invoice {
 
     public float countAll(){
         float suma = 0;
-        for(Car el: list)
-            suma += el.getCena() * ((100 + el.getVat()) / 100);
+        for(int i =0; i<list.size(); i++)
+            suma += this.countOne(i);
         return suma;
     }
-
-
 
     @Override
     public String toString() {

@@ -15,7 +15,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Random;
 
 import static spark.Spark.*;
 import static spark.Spark.staticFiles;
@@ -36,7 +35,9 @@ class App {
         post("/invoice", App::invoiceFunction); // generowanie faktury
         get("/invoices", App::downloadFunction); // pobranie faktury
         //Search
-        post("/invoiceAll", App::invoiceAllCarsFunction); // generowanie faktury
+        post("/invoiceAll", App::invoiceAllCarsFunction); // generowanie faktury za wszyskie auta
+        post("/invoiceByYear", App::invoiceByYearFunction); // generowanie faktury po roku
+        post("/invoiceByPrize", App::invoiceByPrizeFunction); // generowanie faktury po cenie
     }
 
     static String addFunction(Request req, Response res) {
@@ -54,10 +55,8 @@ class App {
     }
 
     static String daneFunction(Request req, Response res) {
-
         Gson gson = new Gson();
-        Type listType = new TypeToken<ArrayList<Car>>() {
-        }.getType();
+        Type listType = new TypeToken<ArrayList<Car>>() {}.getType();
         return gson.toJson(cars, listType);
     }
 
@@ -151,10 +150,42 @@ class App {
 
     static String invoiceByYearFunction(Request req, Response res) {
         Gson gson = new Gson();
-        Invoice i = new Invoice("sprzedawca aut", "nabywca", cars );
+
+        int year = Integer.parseInt( req.body() );
+        ArrayList<Car> newCars = new ArrayList<>();
+
+        for(Car el: cars){
+            if(Objects.equals(year, el.getYear()))
+                newCars.add(el);
+        }
+
+        Invoice i = new Invoice("sprzedawca aut", "nabywca", newCars );
         System.out.println(i);
         Invoices inv =  new Invoices(i);
-        String odp =  inv.allCars();
+        String odp =  inv.carsByYear( year);
+
+        return gson.toJson(odp);
+    }
+
+    static String invoiceByPrizeFunction(Request req, Response res) {
+        Gson gson = new Gson();
+
+        System.out.println(req.body());
+
+        int l = req.body().indexOf("-");
+        int min = Integer.parseInt( req.body().substring(0, l) );
+        int max = Integer.parseInt( req.body().substring(l+1));
+
+        ArrayList<Car> newCars = new ArrayList<>();
+
+        for(Car el: cars)
+            if (el.getCena() > min && el.getCena() < max)
+                newCars.add(el);
+
+        Invoice i = new Invoice("sprzedawca aut", "nabywca", newCars );
+        System.out.println(i);
+        Invoices inv =  new Invoices(i);
+        String odp =  inv.carsByPrize(min, max);
 
         return gson.toJson(odp);
     }

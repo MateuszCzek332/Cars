@@ -17,8 +17,8 @@
 <input type="button" id="generate" value="Generuj lowoso baze danych aut">
 
 <p id="all">Faktura za wszyskie auta: <input type="button" id="allBtn" value="genetuj"> <a id="downAll" ></a> </p>
-<p id="year">Faktura - auta z danego rocznika: <input type="button" id="yearBtn" value="generuj"> </p>
-<p id="prize" >Faktura - auta z danego zakresu cen: <input type="button" id="prizeBtn" value="generuj"> </p>
+<p id="year">Faktura - auta z danego rocznika: <input type="number" id="yearInput"> <input type="button" id="yearBtn" value="generuj"> <a id="downByYear" ></a> </p>
+<p id="prize" >Faktura - auta z danego zakresu cen: <input type="number" id="min" > <input type="number" id="max" > <input type="button" id="prizeBtn" value="generuj"> <a id="downByPrize" ></a> </p>
 
 <table id="table">
 
@@ -97,6 +97,39 @@
             return await response.json()
     }
 
+    let carsByYearFetchPostAsync = async () => {
+
+        const options = {
+            method: "POST",
+            body: document.getElementById("yearInput").value,
+        };
+
+        let response = await fetch("/invoiceByYear", options)
+
+        if (!response.ok)
+            return response.status
+        else
+            return await response.json()
+    }
+
+    let carsByPrizePostAsync = async () => {
+
+        const data = document.getElementById("min").value + "-" + document.getElementById("max").value
+
+
+        const options = {
+            method: "POST",
+            body: data,
+        };
+
+        let response = await fetch("/invoiceByPrize", options)
+
+        if (!response.ok)
+            return response.status
+        else
+            return await response.json()
+    }
+
     createTable =  async (w) => {
         table.innerHTML = init;
         console.log(w);
@@ -158,6 +191,22 @@
         let w = await allCarsFetchPostAsync();
         console.log(w);
         let a = document.getElementById("downAll")
+        a.innerText= "pobierz"
+        a.href = `/invoices?uuid=${w}`;
+    }
+
+    document.getElementById("yearBtn").onclick = async () =>{
+        let w = await carsByYearFetchPostAsync();
+        console.log(w);
+        let a = document.getElementById("downByYear")
+        a.innerText= "pobierz"
+        a.href = `/invoices?uuid=${w}`;
+    }
+
+    document.getElementById("prizeBtn").onclick = async () =>{
+        let w = await carsByPrizePostAsync();
+        console.log(w);
+        let a = document.getElementById("downByPrize")
         a.innerText= "pobierz"
         a.href = `/invoices?uuid=${w}`;
     }
