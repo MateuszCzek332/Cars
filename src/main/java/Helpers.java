@@ -18,12 +18,8 @@ public class Helpers {
         newairbags.add(new Airbag("kanapa", random.nextBoolean()));
         newairbags.add(new Airbag("boczne", random.nextBoolean()));
 
-        String newimg =  this.imgs[random.nextInt(this.imgs.length)];
-        int newvat =  this.vats[random.nextInt(this.vats.length)];
-        int newcena =  5000 + random.nextInt(30000);
-        String newdata = this.getRandomDate();
 
-        return new Car(null, newmodel, newairbags, newdata, newimg, newcena, newvat, newyear, randomColor);
+        return new Car(null, newmodel, newairbags, getRandomDate(), getrandomImg(), getRandomPrize(), getRandomVat(), newyear, randomColor);
     }
 
     String getRandomDate(){
@@ -33,5 +29,23 @@ public class Helpers {
         int day = random.nextInt(30);
         CustomDate newdata =  new CustomDate( year, month, day);
         return newdata.getDate();
+    }
+
+    String getrandomImg(){
+        Random random = new Random();
+        String newimg =  this.imgs[random.nextInt(this.imgs.length)];
+        return newimg;
+    }
+
+    int getRandomPrize(){
+        Random random = new Random();
+        int newcena =  5000 + random.nextInt(30000);
+        return newcena;
+    }
+
+    int getRandomVat(){
+        Random random = new Random();
+        int newvat =  this.vats[random.nextInt(this.vats.length)];
+        return newvat;
     }
 }

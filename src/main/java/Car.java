@@ -85,4 +85,12 @@ public class Car {
     public int getCena() {return cena;}
 
     public int getVat() {return vat;}
+
+    public void setDate(String date) {this.date = date;}
+
+    public void setImg(String img) {this.img = img;}
+
+    public void setCena(int cena) {this.cena = cena;}
+
+    public void setVat(int vat) {this.vat = vat;}
 }

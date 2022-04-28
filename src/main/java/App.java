@@ -23,6 +23,7 @@ class App {
 
     static ArrayList<Car> cars = new ArrayList<>();
     public static void main(String[] args) {
+        port(getHerokuPort());
         staticFiles.location("/public");
         //index
         post("/add", App::addFunction);
@@ -40,11 +41,24 @@ class App {
         post("/invoiceByPrize", App::invoiceByPrizeFunction); // generowanie faktury po cenie
     }
 
+    static int getHerokuPort() {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (processBuilder.environment().get("PORT") != null) {
+            return Integer.parseInt(processBuilder.environment().get("PORT"));
+        }
+        return 4567;
+    }
+
     static String addFunction(Request req, Response res) {
 
         Gson gson = new Gson();
+        Helpers h = new Helpers();
         Car newcar = gson.fromJson(req.body(), Car.class);
         newcar.setUuid(Generators.randomBasedGenerator().generate());
+        newcar.setImg(h.getrandomImg());
+        newcar.setCena(h.getRandomPrize());
+        newcar.setVat(h.getRandomVat());
+        newcar.setDate(h.getRandomDate());
         if (cars.isEmpty())
             newcar.setId(1);
         else
@@ -88,15 +102,16 @@ class App {
         Gson gson = new Gson();
         Helpers h = new Helpers();
 
-        Car newcar = h.getRandomCar();
-        newcar.setUuid(Generators.randomBasedGenerator().generate());
-        if (cars.isEmpty())
-            newcar.setId(1);
-        else
-            newcar.setId(cars.get(cars.size() - 1).getId() + 1);
 
-        cars.add(newcar);
-        System.out.println(newcar);
+        for(int i=0; i<10; i++) {
+            Car newcar = h.getRandomCar();
+            newcar.setUuid(Generators.randomBasedGenerator().generate());
+            if (cars.isEmpty())
+                newcar.setId(1);
+            else
+                newcar.setId(cars.get(cars.size() - 1).getId() + 1);
+            cars.add(newcar);
+        }
 
         Type listType = new TypeToken<ArrayList<Car>>() {
         }.getType();
