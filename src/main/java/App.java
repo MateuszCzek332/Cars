@@ -210,7 +210,7 @@ class App {
         String uuid =  req.queryParams("uuid");
         res.type("application/octet-stream"); //
         res.header("Content-Disposition", "attachment; filename="+ uuid + ".pdf"); // nagłówek
-
+        //XDDDDDD
         try {
             OutputStream outputStream = res.raw().getOutputStream();
             outputStream.write(Files.readAllBytes(Path.of("./katalog/" + uuid + ".pdf"))); // response pliku do przeglądarki
