@@ -122,8 +122,9 @@ class App {
         for (Car el : cars) {
             if (Objects.equals(req.body().substring(1, 37), el.getUuid().toString())) {
                 try {
+                    el.setInvoice(true);
                     Document document = new Document();
-                    PdfWriter.getInstance(document, new FileOutputStream("src/main/resources/public/katalog/" + el.getUuid() + ".pdf"));
+                    PdfWriter.getInstance(document, new FileOutputStream("./katalog/" + el.getUuid() + ".pdf"));
                     document.open();
                     Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
 
@@ -140,10 +141,9 @@ class App {
                         document.add(docAirbag);
                     }
 
-                    Image img = Image.getInstance("src/main/resources/public/img/" + el.getImg() );
+                    Image img = Image.getInstance("./src/main/resources/public/img/" + el.getImg() );
                     document.add(img);
                     document.close();
-                    el.setInvoice(true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -209,12 +209,12 @@ class App {
 
         String uuid =  req.queryParams("uuid");
         res.type("application/octet-stream"); //
-        res.header("Content-Disposition", "attachment; filename=Faktura-" +uuid+".pdf"); // nagłówek
+        res.header("Content-Disposition", "attachment; filename="+ uuid + ".pdf"); // nagłówek
 
         try {
             OutputStream outputStream = res.raw().getOutputStream();
-            outputStream.write(Files.readAllBytes(Path.of("src/main/resources/public/katalog/" + uuid+ ".pdf"))); // response pliku do przeglądarki
-        } catch (IOException e) {
+            outputStream.write(Files.readAllBytes(Path.of("./katalog/" + uuid + ".pdf"))); // response pliku do przeglądarki
+       } catch (IOException e) {
             e.printStackTrace();
         }
 

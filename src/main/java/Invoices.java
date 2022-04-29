@@ -17,7 +17,7 @@ public class Invoices {
         String fileName = "all_cars_" + invoice.time;
         Document document = new Document();
         try {
-            PdfWriter.getInstance(document, new FileOutputStream("src/main/resources/public/katalog/" + fileName + ".pdf"));
+            PdfWriter.getInstance(document, new FileOutputStream("./katalog/" + fileName + ".pdf"));
             document.open();
             Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
 
@@ -60,7 +60,7 @@ public class Invoices {
         String fileName = "cars_by_year_" + invoice.time;
         Document document = new Document();
         try {
-            PdfWriter.getInstance(document, new FileOutputStream("src/main/resources/public/katalog/" + fileName + ".pdf"));
+            PdfWriter.getInstance(document, new FileOutputStream("./katalog/" + fileName + ".pdf"));
             document.open();
             Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
 
@@ -103,7 +103,7 @@ public class Invoices {
         String fileName = "cars_by_prize_" + invoice.time;
         Document document = new Document();
         try {
-            PdfWriter.getInstance(document, new FileOutputStream("src/main/resources/public/katalog/" + fileName + ".pdf"));
+            PdfWriter.getInstance(document, new FileOutputStream("./katalog/" + fileName + ".pdf"));
             document.open();
             Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
 
