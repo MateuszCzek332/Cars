@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Car Menager MC</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<h1>Car menager</h1>
+<h2>Wyszukiwanie aut i tworazenie faktur</h2>
+
+<a href="search.html"> Search </a>
+<a href="index.html"> Index </a>
+<a href="admin.html"> Admin </a>
+<a href="cars.html"> Cars </a><br>
+
+<input type="button" id="generate" value="Generuj lowoso baze danych aut">
+
+<p id="all">Faktura za wszyskie auta: <input type="button" id="allBtn" value="genetuj"> <a id="downAll" ></a> </p>
+<p id="year">Faktura - auta z danego rocznika: <input type="number" id="yearInput"> <input type="button" id="yearBtn" value="generuj"> <a id="downByYear" ></a> </p>
+<p id="prize" >Faktura - auta z danego zakresu cen: <input type="number" id="min" > <input type="number" id="max" > <input type="button" id="prizeBtn" value="generuj"> <a id="downByPrize" ></a> </p>
+
+<table id="table">
+
+</table>
+
+
+<script>
+
+    init = `<tr>
+                    <td>ID</td>
+                    <td>UUID</td>
+                    <td>Model</td>
+                    <td>Rok</td>
+                    <td>Kolor</td>
+                    <td>Poduszki</td>
+                    <td>Zdjecie</td>
+                    <td>Data</td>
+                    <td>Cena</td>
+                    <td>Vat</td>
+                </tr>`
+
+    let jsonFetchPostAsync = async () => {
+
+        const data = JSON.stringify({
+            //wysyłamy tylko zatytanie w celu wygenerowania przez serwer bazy i odesłania jej
+        })
+
+        const options = {
+            method: "POST",
+            body: data,
+        };
+
+        let response = await fetch("/json", options)
+
+        if (!response.ok)
+            return response.status
+        else
+            return await response.json()
+    }
+
+    let generateFetchPostAsync = async () => {
+
+        const data = JSON.stringify({
+            //wysyłamy tylko zatytanie w celu wygenerowania przez serwer bazy i odesłania jej
+        })
+
+        const options = {
+            method: "POST",
+            body: data,
+        };
+
+        let response = await fetch("/generate", options)
+
+        if (!response.ok)
+            return response.status
+        else
+            return await response.json()
+    }
+
+    let allCarsFetchPostAsync = async () => {
+
+        const data = JSON.stringify({
+            //wysyłamy tylko zatytanie w celu wygenerowania przez serwer bazy i odesłania jej
+        })
+
+        const options = {
+            method: "POST",
+            body: data,
+        };
+
+        let response = await fetch("/invoiceAll", options)
+
+        if (!response.ok)
+            return response.status
+        else
+            return await response.json()
+    }
+
+    let carsByYearFetchPostAsync = async () => {
+
+        const options = {
+            method: "POST",
+            body: document.getElementById("yearInput").value,
+        };
+
+        let response = await fetch("/invoiceByYear", options)
+
+        if (!response.ok)
+            return response.status
+        else
+            return await response.json()
+    }
+
+    let carsByPrizePostAsync = async () => {
+
+        const data = document.getElementById("min").value + "-" + document.getElementById("max").value
+
+
+        const options = {
+            method: "POST",
+            body: data,
+        };
+
+        let response = await fetch("/invoiceByPrize", options)
+
+        if (!response.ok)
+            return response.status
+        else
+            return await response.json()
+    }
+
+    createTable =  async (w) => {
+        table.innerHTML = init;
+        console.log(w);
+        for (let i =0; i<w.length; i++){
+            let tr = document.createElement("tr")
+            let id = document.createElement("td")
+            let uuid = document.createElement("td")
+            let model = document.createElement("td")
+            let rok = document.createElement("td")
+            let poduszki = document.createElement("td")
+            let kolor = document.createElement("td")
+            let zdjecie = document.createElement("td")
+            let data = document.createElement("td")
+            let cena = document.createElement("td")
+            let vat = document.createElement("td")
+            for (let j=0; j<w[i].airbags.length; j++){
+                poduszki.innerHTML += w[i].airbags[j].description + ": " + w[i].airbags[j].value + '<br>';
+            }
+
+            id.innerText = w[i].id
+            uuid.innerText = w[i].uuid
+            model.innerText = w[i].model
+            rok.innerText = w[i].year
+            kolor.style.backgroundColor = w[i].color
+            img = document.createElement("img")
+            img.src = "img/" + w[i].img;
+            zdjecie.appendChild(img)
+            data.innerText =  w[i].date;
+            cena.innerText = w[i].cena
+            vat.innerText = w[i].vat
+
+
+            tr.appendChild(id)
+            tr.appendChild(uuid)
+            tr.appendChild(model)
+            tr.appendChild(rok)
+            tr.appendChild(kolor)
+            tr.appendChild(poduszki)
+            tr.appendChild(zdjecie)
+            tr.appendChild(data)
+            tr.appendChild(cena)
+            tr.appendChild(vat)
+            table.appendChild(tr)
+        }
+
+    }
+
+    window.onload = async () =>{
+        let w = await jsonFetchPostAsync()
+        createTable(w)
+    }
+
+    document.getElementById("generate").onclick = async () =>{
+        let w = await generateFetchPostAsync()
+        createTable(w)
+    }
+
+    document.getElementById("allBtn").onclick = async () =>{
+        let w = await allCarsFetchPostAsync();
+        console.log(w);
+        let a = document.getElementById("downAll")
+        a.innerText= "pobierz"
+        a.href = `/invoices?uuid=${w}`;
+    }
+
+    document.getElementById("yearBtn").onclick = async () =>{
+        let w = await carsByYearFetchPostAsync();
+        console.log(w);
+        let a = document.getElementById("downByYear")
+        a.innerText= "pobierz"
+        a.href = `/invoices?uuid=${w}`;
+    }
+
+    document.getElementById("prizeBtn").onclick = async () =>{
+        let w = await carsByPrizePostAsync();
+        console.log(w);
+        let a = document.getElementById("downByPrize")
+        a.innerText= "pobierz"
+        a.href = `/invoices?uuid=${w}`;
+    }
+</script>
+</body>
+</html>

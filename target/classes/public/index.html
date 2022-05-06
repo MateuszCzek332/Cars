@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Car Menager MC</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<h1>Car menager</h1>
+<h2>Dodawanie auta</h2>
+
+<a href="search.html"> Search </a>
+<a href="index.html"> Index </a>
+<a href="admin.html"> Admin </a>
+<a href="cars.html"> Cars </a><br>
+
+    <p>Model: <input type="text" id="model"></p>
+    <p>Rok: <select id="year">
+            <option>2002</option>
+            <option>2004</option>
+            <option>2005</option>
+            <option>2006</option>
+            <option>2007</option>
+        </select></p>
+    <p>Poduszki: <br>
+        - kierowca <input type="checkbox" id="kierowca" name="kierowca"><br>
+        - pasażer <input type="checkbox" id="pasazer" name="pasazer"><br>
+        - kanapa <input type="checkbox" id="kanapa"><br>
+        - boczne <input type="checkbox" id="boczne"></p>
+    <p>Kolor: <input type="color" id="color"></p>
+    <input id="btn" type="button" value="submit"  ><br>
+
+<script>
+
+    let addFetchPostAsync = async () => {
+
+        const data = JSON.stringify({
+            model: document.getElementById("model").value,
+            year: document.getElementById("year").value,
+            color: document.getElementById("color").value,
+            airbags: [
+                {description: "kierowca",value: document.getElementById("kierowca").checked},
+                {description: "pasazer",value: document.getElementById("pasazer").checked},
+                {description: "kanapa",value: document.getElementById("kanapa").checked},
+                {description: "boczne",value: document.getElementById("boczne").checked},
+            ]
+        })
+
+        const options = {
+            method: "POST",
+            body: data,
+        };
+
+        let response = await fetch("/add", options)
+
+        if (!response.ok)
+            return response.status
+        else
+            return await response.json()
+    }
+
+    document.getElementById("btn").onclick = async () => {
+        let w = await addFetchPostAsync();
+        alert( JSON.stringify(w, null, 5) );
+    }
+
+</script>
+</body>
+</html>

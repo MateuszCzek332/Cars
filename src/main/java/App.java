@@ -25,6 +25,13 @@ class App {
     public static void main(String[] args) {
         port(getHerokuPort());
         staticFiles.location("/public");
+        try {
+            Files.createDirectory(Path.of("katalog"));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
         //index
         post("/add", App::addFunction);
         //cars
@@ -141,7 +148,7 @@ class App {
                         document.add(docAirbag);
                     }
 
-                    Image img = Image.getInstance("./src/main/resources/public/img/" + el.getImg() );
+                    Image img = Image.getInstance("src/main/resources/public/img/" + el.getImg() );
                     document.add(img);
                     document.close();
                 } catch (Exception e) {
@@ -213,7 +220,7 @@ class App {
         //XDDDDDD
         try {
             OutputStream outputStream = res.raw().getOutputStream();
-            outputStream.write(Files.readAllBytes(Path.of("./katalog/" + uuid + ".pdf"))); // response pliku do przeglądarki
+            outputStream.write(Files.readAllBytes(Path.of("katalog/" + uuid + ".pdf"))); // response pliku do przeglądarki
        } catch (IOException e) {
             e.printStackTrace();
         }
